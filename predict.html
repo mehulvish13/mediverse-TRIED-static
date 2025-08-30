@@ -1,0 +1,519 @@
+{% extends "base.html" %}
+
+{% block title %}Symptom Checker - Mediverse+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Header -->
+            <div class="text-center mb-5">
+                <h1 class="display-5 fw-bold text-primary mb-3">
+                    <i class="fas fa-stethoscope me-3"></i>AI Symptom Checker
+                </h1>
+                <p class="lead text-muted">
+                    Describe your symptoms in detail and let our AI analyze them for you.
+                </p>
+                
+                <!-- Prominent Disclaimer Banner -->
+                <div class="disclaimer-banner mt-4">
+                    <div class="alert alert-warning border-warning shadow-sm" role="alert">
+                        <div class="d-flex align-items-center justify-content-center">
+                            <i class="fas fa-exclamation-triangle fa-lg text-warning me-3"></i>
+                            <div class="text-start">
+                                <h6 class="alert-heading mb-1">⚠️ This is NOT a substitute for professional medical advice</h6>
+                                <p class="mb-0 small">
+                                    This AI tool is for educational purposes only. Always consult with qualified healthcare professionals for proper diagnosis and treatment.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Symptom Input Form -->
+            <div class="card shadow-lg border-0 mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="fas fa-edit me-2"></i>Describe Your Symptoms</h4>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST" id="symptomForm">
+                        <div class="mb-4">
+                            <label for="symptoms" class="form-label fw-bold">
+                                Tell us what you're experiencing:
+                            </label>
+                            <textarea 
+                                class="form-control form-control-lg" 
+                                id="symptoms" 
+                                name="symptoms" 
+                                rows="5" 
+                                placeholder="Example: I have been experiencing severe headache and fever for the past few days. I also feel nauseous and have been vomiting. My body feels weak and I have stomach pain..."
+                                required>{% if symptoms %}{{ symptoms }}{% endif %}</textarea>
+                            <div class="form-text">
+                                <i class="fas fa-info-circle me-1"></i>
+                                Be as detailed as possible. Include duration, severity, and any other relevant information.
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg" id="analyzeButton">
+                                <span class="button-content">
+                                    <i class="fas fa-search me-2"></i>Analyze Symptoms
+                                </span>
+                                <span class="loading-content d-none">
+                                    <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                                    <span class="loading-text">Analyzing...</span>
+                                </span>
+                            </button>
+                        </div>
+                        
+                        <!-- Loading Progress Section -->
+                        <div id="loadingSection" class="mt-4 d-none">
+                            <div class="card border-primary">
+                                <div class="card-body text-center">
+                                    <div class="mb-3">
+                                        <div class="analysis-spinner">
+                                            <div class="spinner-grow text-primary" role="status">
+                                                <span class="visually-hidden">Loading...</span>
+                                            </div>
+                                            <div class="spinner-grow text-success" role="status" style="animation-delay: 0.2s;">
+                                                <span class="visually-hidden">Loading...</span>
+                                            </div>
+                                            <div class="spinner-grow text-info" role="status" style="animation-delay: 0.4s;">
+                                                <span class="visually-hidden">Loading...</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <h5 class="text-primary mb-3">
+                                        <i class="fas fa-brain me-2"></i>AI Analysis in Progress
+                                    </h5>
+                                    
+                                    <!-- Progress Bar -->
+                                    <div class="progress mb-3" style="height: 25px;">
+                                        <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary" 
+                                             role="progressbar" style="width: 0%" id="analysisProgress">
+                                            <span class="progress-text">0%</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Loading Steps -->
+                                    <div class="loading-steps">
+                                        <div class="step" id="step1">
+                                            <i class="fas fa-file-text text-muted me-2"></i>
+                                            <span class="step-text text-muted">Processing symptom description...</span>
+                                            <i class="fas fa-check text-success ms-2 d-none step-check"></i>
+                                        </div>
+                                        <div class="step" id="step2">
+                                            <i class="fas fa-brain text-muted me-2"></i>
+                                            <span class="step-text text-muted">Running AI analysis...</span>
+                                            <i class="fas fa-check text-success ms-2 d-none step-check"></i>
+                                        </div>
+                                        <div class="step" id="step3">
+                                            <i class="fas fa-chart-line text-muted me-2"></i>
+                                            <span class="step-text text-muted">Calculating confidence scores...</span>
+                                            <i class="fas fa-check text-success ms-2 d-none step-check"></i>
+                                        </div>
+                                        <div class="step" id="step4">
+                                            <i class="fas fa-clipboard-list text-muted me-2"></i>
+                                            <span class="step-text text-muted">Generating results...</span>
+                                            <i class="fas fa-check text-success ms-2 d-none step-check"></i>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mt-3">
+                                        <small class="text-muted">
+                                            <i class="fas fa-info-circle me-1"></i>
+                                            This process typically takes 5-10 seconds
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Error Message -->
+            {% if error %}
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-circle me-2"></i>
+                <strong>Error:</strong> {{ error }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            {% endif %}
+
+            <!-- Results -->
+            {% if predicted_disease %}
+            <div class="results-section">
+                <!-- Main Prediction -->
+                <div class="card shadow-lg border-0 mb-4">
+                    <div class="card-header bg-success text-white">
+                        <h4 class="mb-0">
+                            <i class="fas fa-diagnoses me-2"></i>Analysis Results
+                        </h4>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
+                                <h3 class="text-success mb-2">
+                                    <i class="fas fa-clipboard-check me-2"></i>
+                                    Primary Prediction: <strong>{{ predicted_disease }}</strong>
+                                </h3>
+                                {% if confidence %}
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Confidence Score:</label>
+                                    <div class="progress" style="height: 25px;">
+                                        <div class="progress-bar bg-success" role="progressbar" 
+                                             style="width: {{ (confidence * 100)|round(1) }}%">
+                                            {{ (confidence * 100)|round(1) }}%
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-4 text-center">
+                                <div class="prediction-icon">
+                                    <i class="fas fa-user-md fa-4x text-success"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Top Predictions -->
+                {% if top_predictions %}
+                <div class="card shadow border-0 mb-4">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-list-ol me-2"></i>Alternative Possibilities
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            {% for pred in top_predictions[:3] %}
+                            <div class="col-md-4 mb-3">
+                                <div class="card h-100 border-info">
+                                    <div class="card-body text-center">
+                                        <h6 class="card-title">{{ pred.disease }}</h6>
+                                        <div class="progress mb-2">
+                                            <div class="progress-bar bg-info" role="progressbar" 
+                                                 style="width: {{ (pred.probability * 100)|round(1) }}%">
+                                                {{ (pred.probability * 100)|round(1) }}%
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Disease Information -->
+                {% if disease_info %}
+                <div class="card shadow border-0 mb-4">
+                    <div class="card-header bg-warning text-dark">
+                        <h5 class="mb-0">
+                            <i class="fas fa-info-circle me-2"></i>About {{ predicted_disease }}
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <h6><i class="fas fa-file-medical me-2"></i>Description:</h6>
+                                <p class="text-muted">{{ disease_info.description }}</p>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <h6><i class="fas fa-symptoms me-2"></i>Common Symptoms:</h6>
+                                <p class="text-muted">{{ disease_info.symptoms }}</p>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <h6><i class="fas fa-shield-alt me-2"></i>Prevention:</h6>
+                                <p class="text-muted">{{ disease_info.prevention }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Actions -->
+                <div class="text-center mb-4">
+                    <a href="{{ url_for('predict') }}" class="btn btn-primary me-3">
+                        <i class="fas fa-redo me-2"></i>Check New Symptoms
+                    </a>
+                    <button class="btn btn-outline-primary" onclick="window.print()">
+                        <i class="fas fa-print me-2"></i>Print Results
+                    </button>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Sample Symptoms -->
+            {% if not predicted_disease %}
+            <div class="card border-0 bg-light">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="fas fa-lightbulb me-2"></i>Sample Symptoms
+                    </h5>
+                    <p class="card-text text-muted">Here are some examples of how to describe your symptoms:</p>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="sample-symptom" onclick="fillSample(this)">
+                                <strong>Fever & Headache:</strong><br>
+                                <small>"I have been experiencing severe headache and high fever for the past 3 days. I also feel nauseous and have vomited twice."</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="sample-symptom" onclick="fillSample(this)">
+                                <strong>Respiratory Issues:</strong><br>
+                                <small>"I have persistent cough with difficulty breathing. My chest feels tight and I'm experiencing fatigue."</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="sample-symptom" onclick="fillSample(this)">
+                                <strong>Stomach Problems:</strong><br>
+                                <small>"I have severe stomach pain with diarrhea and constipation. I feel nauseous most of the time and have lost my appetite."</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="sample-symptom" onclick="fillSample(this)">
+                                <strong>Skin Issues:</strong><br>
+                                <small>"I have an itchy rash all over my body with red bumps. The itching is intense and I also have mild fever."</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Medical Disclaimer -->
+<div class="alert alert-warning mx-auto mb-4" style="max-width: 800px;">
+    <div class="text-center">
+        <h6><i class="fas fa-exclamation-triangle me-2"></i>Important Medical Disclaimer</h6>
+        <p class="mb-2 fw-bold">
+            This AI tool provides educational information only and should NEVER be used as a substitute for professional medical advice, 
+            diagnosis, or treatment.
+        </p>
+        <p class="mb-0 small">
+            Always seek the advice of your physician or other qualified health provider with any questions 
+            you may have regarding a medical condition. Never disregard professional medical advice or delay seeking treatment 
+            because of information provided by this AI tool.
+        </p>
+    </div>
+</div>
+
+<!-- Emergency Warning -->
+<div class="alert alert-danger mx-auto mb-4" style="max-width: 800px;">
+    <div class="text-center">
+        <h6><i class="fas fa-ambulance me-2"></i>EMERGENCY WARNING</h6>
+        <p class="mb-2 fw-bold">
+            If you are experiencing severe symptoms, chest pain, difficulty breathing, loss of consciousness, 
+            or any other medical emergency - CALL 911 IMMEDIATELY!
+        </p>
+        <p class="mb-0 small">
+            Do not use this tool for emergency medical situations. This AI cannot replace emergency medical services.
+        </p>
+    </div>
+</div>
+
+<!-- Data Privacy Notice -->
+<div class="alert alert-info mx-auto mb-4" style="max-width: 800px;">
+    <div class="text-center">
+        <h6><i class="fas fa-shield-check me-2"></i>Privacy & Data Security</h6>
+        <p class="mb-2 small">
+            <strong>Your Privacy is Protected:</strong> We do not store personal information or create medical records. 
+            Your symptom data is processed temporarily and securely, then automatically deleted after analysis.
+        </p>
+        <p class="mb-0 small">
+            <i class="fas fa-lock me-1"></i>All data transmission is encrypted using industry-standard SSL security.
+        </p>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function fillSample(element) {
+    const text = element.querySelector('small').textContent.replace(/"/g, '');
+    document.getElementById('symptoms').value = text;
+    document.getElementById('symptoms').focus();
+}
+
+// Enhanced loading state with progress animation
+document.getElementById('symptomForm').addEventListener('submit', function(e) {
+    const button = document.getElementById('analyzeButton');
+    const buttonContent = button.querySelector('.button-content');
+    const loadingContent = button.querySelector('.loading-content');
+    const loadingSection = document.getElementById('loadingSection');
+    
+    // Show loading state
+    buttonContent.classList.add('d-none');
+    loadingContent.classList.remove('d-none');
+    button.disabled = true;
+    
+    // Show loading section
+    loadingSection.classList.remove('d-none');
+    
+    // Smooth scroll to loading section
+    setTimeout(() => {
+        loadingSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 100);
+    
+    // Simulate progressive loading with steps
+    simulateLoadingProgress();
+});
+
+function simulateLoadingProgress() {
+    const progressBar = document.getElementById('analysisProgress');
+    const progressText = progressBar.querySelector('.progress-text');
+    const steps = document.querySelectorAll('.step');
+    
+    let progress = 0;
+    let currentStep = 0;
+    
+    const progressInterval = setInterval(() => {
+        progress += Math.random() * 15 + 5; // Random increment between 5-20%
+        
+        if (progress > 100) progress = 100;
+        
+        progressBar.style.width = progress + '%';
+        progressText.textContent = Math.round(progress) + '%';
+        
+        // Update step status
+        if (progress > 25 && currentStep === 0) {
+            completeStep(0);
+            activateStep(1);
+            currentStep = 1;
+        } else if (progress > 50 && currentStep === 1) {
+            completeStep(1);
+            activateStep(2);
+            currentStep = 2;
+        } else if (progress > 75 && currentStep === 2) {
+            completeStep(2);
+            activateStep(3);
+            currentStep = 3;
+        } else if (progress >= 100 && currentStep === 3) {
+            completeStep(3);
+            currentStep = 4;
+        }
+        
+        if (progress >= 100) {
+            clearInterval(progressInterval);
+            // The form will submit and page will reload, so we don't need to hide loading
+        }
+    }, 200);
+}
+
+function activateStep(stepIndex) {
+    const step = document.getElementById('step' + (stepIndex + 1));
+    const icon = step.querySelector('i:first-child');
+    const text = step.querySelector('.step-text');
+    
+    icon.className = 'fas fa-spinner fa-spin text-primary me-2';
+    text.className = 'step-text text-primary fw-bold';
+}
+
+function completeStep(stepIndex) {
+    const step = document.getElementById('step' + (stepIndex + 1));
+    const icon = step.querySelector('i:first-child');
+    const text = step.querySelector('.step-text');
+    const check = step.querySelector('.step-check');
+    
+    icon.className = 'fas fa-check text-success me-2';
+    text.className = 'step-text text-success';
+    check.classList.remove('d-none');
+}
+
+// Add CSS animations and styles
+const style = document.createElement('style');
+style.textContent = `
+    .analysis-spinner {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .loading-steps {
+        text-align: left;
+        max-width: 400px;
+        margin: 0 auto;
+    }
+    
+    .step {
+        display: flex;
+        align-items: center;
+        padding: 0.5rem 0;
+        transition: all 0.3s ease;
+    }
+    
+    .step-text {
+        flex: 1;
+        transition: all 0.3s ease;
+    }
+    
+    .step-check {
+        transition: all 0.3s ease;
+    }
+    
+    .progress-text {
+        color: white;
+        font-weight: bold;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    }
+    
+    .button-content,
+    .loading-content {
+        transition: all 0.3s ease;
+    }
+    
+    .loading-content {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .loading-text {
+        font-weight: 600;
+    }
+    
+    #loadingSection {
+        animation: slideIn 0.5s ease-in-out;
+    }
+    
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .spinner-grow {
+        width: 1.5rem;
+        height: 1.5rem;
+    }
+    
+    @media (max-width: 768px) {
+        .analysis-spinner .spinner-grow {
+            width: 1rem;
+            height: 1rem;
+        }
+        
+        .loading-steps {
+            font-size: 0.9rem;
+        }
+    }
+`;
+document.head.appendChild(style);
+</script>
+{% endblock %}

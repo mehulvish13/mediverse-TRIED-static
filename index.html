@@ -1,791 +1,573 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mediverse+ - AI-Powered Health Assistant</title>
-    
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
-    <style>
-        /* Custom CSS for Mediverse+ */
-        :root {
-            --primary-color: #0d6efd;
-            --secondary-color: #6c757d;
-            --success-color: #198754;
-            --warning-color: #ffc107;
-            --danger-color: #dc3545;
-            --info-color: #0dcaf0;
-            --light-color: #f8f9fa;
-            --dark-color: #212529;
-        }
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mediverse+ — AI-Powered Health Assistant</title>
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-        }
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <!-- Font Awesome (Free) -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2Pkf6QWfXwZ0e8qT9gWg3V2xJQ8jW1v7Q4nHqytYFqJ2GNRa6VxC5wM8Nw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
-        .main-content {
-            margin-top: 76px;
-            min-height: calc(100vh - 76px);
-        }
+  <style>
+    :root {
+      --brand: #0d6efd;
+      --brand-dark: #0a58ca;
+      --muted: #6c757d;
+      --surface: #fff;
+      --surface-alt: #f8f9fa;
+      --shadow: 0 4px 24px rgba(60,60,120,0.10), 0 1.5px 4px rgba(60,60,120,0.06);
+      --radius: 1.1rem;
+      --transition: 0.25s cubic-bezier(.4,0,.2,1);
+    }
+    html, body { height: 100%; }
 
-        /* Navigation */
-        .navbar-brand {
-            font-size: 1.5rem;
-            font-weight: 700;
-        }
+    /* Layout */
+    header.navbar {
+      box-shadow: var(--shadow);
+      background: linear-gradient(90deg, var(--brand) 80%, #764ba2 100%) !important;
+      transition: background var(--transition);
+    }
+    main { margin-top: 72px; }
 
-        .navbar-nav .nav-link {
-            font-weight: 500;
-            transition: color 0.3s ease;
-        }
+    /* Sections */
+    .section { display: none; }
+    .section.active { display: block; animation: fadeIn 0.5s; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        .navbar-nav .nav-link:hover {
-            color: #fff !important;
-        }
+    /* Hero */
+    .hero {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      box-shadow: 0 8px 32px rgba(60,60,120,0.10);
+    }
+    .floating-card {
+      background: rgba(255,255,255,.16);
+      border: 1.5px solid rgba(255,255,255,.22);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+      border-radius: var(--radius);
+      padding: 2.2rem 2rem;
+      animation: float 6s ease-in-out infinite;
+      transition: box-shadow var(--transition), transform var(--transition);
+    }
+    .floating-card:hover {
+      box-shadow: 0 8px 40px rgba(60,60,120,0.18);
+      transform: translateY(-4px) scale(1.03);
+    }
+    @keyframes float { 0%,100%{transform: translateY(0)} 50%{transform: translateY(-10px)} }
 
-        /* Hero Section */
-        .hero-section {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            overflow: hidden;
-        }
+    /* Card improvements */
+    .card {
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border: none;
+      transition: box-shadow var(--transition), transform var(--transition);
+    }
+    .card:hover {
+      box-shadow: 0 8px 40px rgba(60,60,120,0.16);
+      transform: translateY(-2px) scale(1.01);
+    }
+    .card-header {
+      border-radius: var(--radius) var(--radius) 0 0;
+      font-weight: 600;
+      background: linear-gradient(90deg, var(--brand) 80%, #764ba2 100%);
+      color: #fff;
+    }
 
-        .text-gradient {
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
+    /* Chips */
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      padding: .5rem 1.1rem;
+      border-radius: 999px;
+      color: #fff;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      font-weight: 600;
+      user-select: none;
+      box-shadow: 0 2px 8px rgba(102,126,234,0.10);
+      letter-spacing: 0.01em;
+      font-size: 1.05rem;
+      transition: background var(--transition), box-shadow var(--transition), transform var(--transition);
+    }
+    .chip:hover {
+      background: linear-gradient(135deg, #764ba2, #667eea);
+      box-shadow: 0 4px 16px rgba(102,126,234,0.13);
+      transform: scale(1.04);
+    }
 
-        .hero-stats .stat-item {
-            padding: 1rem;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            margin-bottom: 1rem;
-            backdrop-filter: blur(10px);
-        }
+    /* Buttons */
+    .btn {
+      border-radius: 999px;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      box-shadow: 0 2px 8px rgba(13,110,253,0.08);
+      transition: background var(--transition), color var(--transition), box-shadow var(--transition), transform var(--transition);
+    }
+    .btn-lg { padding: 1.1rem 2.2rem; font-size: 1.15rem; }
+    .btn-primary, .btn-light, .btn-outline-light {
+      border: none;
+    }
+    .btn-primary {
+      background: linear-gradient(90deg, var(--brand) 80%, #764ba2 100%);
+      color: #fff;
+    }
+    .btn-primary:hover, .btn-primary:focus {
+      background: linear-gradient(90deg, #764ba2 80%, var(--brand-dark) 100%);
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(13,110,253,0.13);
+      transform: translateY(-2px) scale(1.03);
+    }
+    .btn-light {
+      background: #fff;
+      color: var(--brand);
+      border: 1.5px solid var(--brand);
+    }
+    .btn-light:hover, .btn-light:focus {
+      background: var(--brand);
+      color: #fff;
+      border-color: var(--brand-dark);
+    }
+    .btn-outline-light {
+      background: transparent;
+      color: #fff;
+      border: 1.5px solid #fff;
+    }
+    .btn-outline-light:hover, .btn-outline-light:focus {
+      background: #fff;
+      color: var(--brand);
+      border-color: var(--brand);
+    }
 
-        .hero-stats .stat-item h3 {
-            font-size: 2rem;
-            font-weight: bold;
-        }
+    /* Inputs */
+    .form-control {
+      border-radius: 0.7rem;
+      border: 1.5px solid #e0e6f0;
+      box-shadow: 0 1.5px 4px rgba(60,60,120,0.04);
+      font-size: 1.08rem;
+      transition: border-color var(--transition), box-shadow var(--transition);
+    }
+    .form-control:focus {
+      border-color: var(--brand);
+      box-shadow: 0 0 0 0.15rem rgba(13,110,253,0.13);
+    }
 
-        .floating-card {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 2rem;
-            border-radius: 20px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            animation: float 6s ease-in-out infinite;
-        }
+    /* Misc */
+    .cursor-pointer { cursor: pointer; }
+    .bg-warning-subtle { background: #fffbe6 !important; }
+    .alert { border-radius: 0.8rem; font-size: 1.04rem; }
+    .alert-warning { background: #fffbe6; color: #856404; border: 1.5px solid #ffe066; }
+    .alert-success { background: #e6ffed; color: #155724; border: 1.5px solid #b7f5c2; }
+    .alert-danger { background: #fff0f0; color: #721c24; border: 1.5px solid #f5b7b7; }
 
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-20px); }
-        }
+    /* Footer */
+    footer { background: linear-gradient(90deg, #212529 80%, #764ba2 100%) !important; }
+    footer a { transition: color var(--transition), text-decoration var(--transition); }
+    footer a:hover { color: #ffe066 !important; text-decoration: underline; }
 
-        /* Feature Cards */
-        .feature-card {
-            background: white;
-            padding: 2rem;
-            border-radius: 15px;
-            text-align: center;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            border: none;
-        }
-
-        .feature-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
-        }
-
-        .feature-icon {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary-color), #764ba2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 1rem;
-        }
-
-        .feature-icon i {
-            font-size: 2rem;
-            color: white;
-        }
-
-        /* Disease Tags */
-        .disease-tag {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            padding: 0.75rem 1rem;
-            border-radius: 25px;
-            text-align: center;
-            font-weight: 500;
-            margin-bottom: 0.5rem;
-            transition: transform 0.3s ease;
-            cursor: pointer;
-        }
-
-        .disease-tag:hover {
-            transform: scale(1.05);
-        }
-
-        /* Cards */
-        .card {
-            border: none;
-            border-radius: 15px;
-            overflow: hidden;
-        }
-
-        .card-header {
-            border: none;
-            font-weight: 600;
-        }
-
-        /* Buttons */
-        .btn {
-            border-radius: 25px;
-            font-weight: 500;
-            padding: 0.75rem 1.5rem;
-            transition: all 0.3s ease;
-        }
-
-        .btn-lg {
-            padding: 1rem 2rem;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary-color), #764ba2);
-            border: none;
-        }
-
-        .btn-primary:hover {
-            background: linear-gradient(135deg, #764ba2, var(--primary-color));
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-        }
-
-        /* Form Controls */
-        .form-control, .form-select {
-            border-radius: 10px;
-            border: 2px solid #e9ecef;
-            padding: 0.75rem 1rem;
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .form-control:focus, .form-select:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
-        }
-
-        /* Progress Bars */
-        .progress {
-            border-radius: 10px;
-            height: 20px;
-        }
-
-        .progress-bar {
-            border-radius: 10px;
-            transition: width 0.6s ease;
-        }
-
-        /* Sample Symptoms */
-        .sample-symptom {
-            background: #f8f9fa;
-            padding: 1rem;
-            border-radius: 10px;
-            border-left: 4px solid var(--primary-color);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-bottom: 0.5rem;
-        }
-
-        .sample-symptom:hover {
-            background: #e9ecef;
-            transform: translateX(5px);
-        }
-
-        /* Process Steps */
-        .process-steps {
-            position: relative;
-        }
-
-        .step-item {
-            display: flex;
-            align-items: flex-start;
-            position: relative;
-        }
-
-        .step-item:not(:last-child)::after {
-            content: '';
-            position: absolute;
-            left: 20px;
-            top: 50px;
-            width: 2px;
-            height: calc(100% - 10px);
-            background: var(--primary-color);
-            opacity: 0.3;
-        }
-
-        .step-number {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary-color), #764ba2);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            margin-right: 1rem;
-            flex-shrink: 0;
-        }
-
-        .step-content h5 {
-            color: var(--primary-color);
-            margin-bottom: 0.5rem;
-        }
-
-        /* Contact Cards */
-        .contact-card {
-            background: white;
-            padding: 2rem;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease;
-            height: 100%;
-        }
-
-        .contact-card:hover {
-            transform: translateY(-5px);
-        }
-
-        /* Stats */
-        .stat-card {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            margin-bottom: 1rem;
-        }
-
-        .condition-item {
-            padding: 0.5rem 0;
-            border-bottom: 1px solid #e9ecef;
-        }
-
-        .condition-item:last-child {
-            border-bottom: none;
-        }
-
-        /* Prediction Results */
-        .results-section .card {
-            animation: slideInUp 0.5s ease;
-        }
-
-        @keyframes slideInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .prediction-icon {
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-
-        /* Alerts */
-        .alert {
-            border: none;
-            border-radius: 10px;
-            font-weight: 500;
-        }
-
-        /* Page Sections */
-        .section {
-            display: none;
-        }
-
-        .section.active {
-            display: block;
-        }
-
-        /* Accordion */
-        .accordion-button {
-            font-weight: 500;
-            border-radius: 10px !important;
-        }
-
-        .accordion-button:not(.collapsed) {
-            background: linear-gradient(135deg, var(--primary-color), #764ba2);
-            color: white;
-        }
-
-        /* Animations */
-        .fade-in {
-            animation: fadeIn 0.5s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .hero-section {
-                text-align: center;
-            }
-            
-            .hero-content h1 {
-                font-size: 2.5rem;
-            }
-            
-            .floating-card {
-                margin-top: 2rem;
-            }
-            
-            .step-item {
-                flex-direction: column;
-                text-align: center;
-            }
-            
-            .step-number {
-                margin: 0 auto 1rem;
-            }
-            
-            .step-item:not(:last-child)::after {
-                display: none;
-            }
-        }
-
-        /* Print Styles */
-        @media print {
-            .navbar, .footer, .btn, .alert-warning {
-                display: none !important;
-            }
-            
-            .main-content {
-                margin-top: 0;
-            }
-            
-            .card {
-                box-shadow: none;
-                border: 1px solid #dee2e6;
-            }
-        }
-    </style>
+    /* Responsive tweaks */
+    @media (max-width: 767px) {
+      .floating-card { padding: 1.2rem 1rem; }
+      .card { border-radius: 1rem; }
+      .btn-lg { padding: 1rem 1.2rem; font-size: 1rem; }
+      .chip { font-size: 0.98rem; padding: .45rem .8rem; }
+    }
+  </style>
+  </style>
 </head>
+
 <body>
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+  <!-- Nav -->
+  <header class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top" role="banner">
+    <div class="container">
+      <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="#home" data-section="home">
+        <i class="fa-solid fa-heart-pulse"></i>
+        Mediverse+
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav" aria-controls="nav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <nav id="nav" class="collapse navbar-collapse" role="navigation" aria-label="Primary">
+        <ul class="navbar-nav ms-auto align-items-lg-center">
+          <li class="nav-item"><a class="nav-link" href="#home" data-section="home"><i class="fa-solid fa-house me-1"></i>Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="#predict" data-section="predict"><i class="fa-solid fa-stethoscope me-1"></i>Symptom Checker</a></li>
+          <li class="nav-item"><a class="nav-link" href="#about" data-section="about"><i class="fa-solid fa-circle-info me-1"></i>About</a></li>
+          <li class="nav-item"><a class="nav-link" href="#contact" data-section="contact"><i class="fa-solid fa-envelope me-1"></i>Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="main container-fluid p-0" role="main">
+    <!-- HOME -->
+    <section id="home" class="section active" aria-labelledby="home-title">
+      <div class="hero py-5">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="#" onclick="showSection('home')">
-                <i class="fas fa-heart-pulse me-2"></i>Mediverse+
-            </a>
-            
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" onclick="showSection('home')">
-                            <i class="fas fa-home me-1"></i>Home
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" onclick="showSection('predict')">
-                            <i class="fas fa-stethoscope me-1"></i>Symptom Checker
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" onclick="showSection('about')">
-                            <i class="fas fa-info-circle me-1"></i>About
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" onclick="showSection('contact')">
-                            <i class="fas fa-envelope me-1"></i>Contact
-                        </a>
-                    </li>
-                </ul>
+          <div class="row align-items-center g-4 min-vh-75">
+            <div class="col-lg-6">
+              <h1 id="home-title" class="display-5 fw-bold mb-3">Welcome to <span class="text-warning">Mediverse+</span></h1>
+              <p class="lead mb-4">Your AI-powered health companion. Describe your symptoms and get instant, informative predictions.</p>
+              <div class="d-flex flex-wrap gap-2 mb-4">
+                <span class="chip"><i class="fa-solid fa-bolt"></i> Fast</span>
+                <span class="chip"><i class="fa-solid fa-lock"></i> Private</span>
+                <span class="chip"><i class="fa-solid fa-robot"></i> AI-Powered</span>
+              </div>
+              <div class="d-flex flex-wrap gap-2">
+                <a class="btn btn-light btn-lg" href="#predict" data-section="predict"><i class="fa-solid fa-stethoscope me-2"></i>Check Symptoms</a>
+                <a class="btn btn-outline-light btn-lg" href="#about" data-section="about"><i class="fa-solid fa-circle-info me-2"></i>Learn More</a>
+              </div>
             </div>
+            <div class="col-lg-6">
+              <div class="floating-card text-center">
+                <i class="fa-solid fa-user-doctor fa-4x mb-3"></i>
+                <h4 class="mb-2">AI Health Assistant</h4>
+                <p class="mb-0">Analyzes your symptom description and returns likely conditions with helpful guidance.</p>
+              </div>
+            </div>
+          </div>
         </div>
-    </nav>
+      </div>
 
-    <!-- Main Content -->
-    <main class="main-content">
-        <!-- Home Section -->
-        <section id="home" class="section active">
-            <!-- Hero Section -->
-            <section class="hero-section">
-                <div class="container">
-                    <div class="row align-items-center min-vh-100">
-                        <div class="col-lg-6">
-                            <div class="hero-content">
-                                <h1 class="display-4 fw-bold text-primary mb-4">
-                                    Welcome to <span class="text-gradient">Mediverse+</span>
-                                </h1>
-                                <p class="lead mb-4">
-                                    Your AI-powered health companion. Describe your symptoms and get instant, 
-                                    accurate disease predictions powered by advanced machine learning.
-                                </p>
-                                <div class="hero-stats mb-4">
-                                    <div class="row text-center">
-                                        <div class="col-4">
-                                            <div class="stat-item">
-                                                <h3 class="text-primary mb-0">98%</h3>
-                                                <small class="text-muted">Accuracy</small>
-                                            </div>
-                                        </div>
-                                        <div class="col-4">
-                                            <div class="stat-item">
-                                                <h3 class="text-primary mb-0">15</h3>
-                                                <small class="text-muted">Diseases</small>
-                                            </div>
-                                        </div>
-                                        <div class="col-4">
-                                            <div class="stat-item">
-                                                <h3 class="text-primary mb-0">AI</h3>
-                                                <small class="text-muted">Powered</small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="hero-buttons">
-                                    <button class="btn btn-primary btn-lg me-3" onclick="showSection('predict')">
-                                        <i class="fas fa-stethoscope me-2"></i>Check Symptoms
-                                    </button>
-                                    <button class="btn btn-outline-primary btn-lg" onclick="showSection('about')">
-                                        <i class="fas fa-info-circle me-2"></i>Learn More
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-6">
-                            <div class="hero-image text-center">
-                                <div class="floating-card">
-                                    <i class="fas fa-user-md fa-5x text-primary mb-3"></i>
-                                    <h4>AI Health Assistant</h4>
-                                    <p class="text-muted">Advanced machine learning algorithms analyze your symptoms</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+      <section class="py-5 bg-light">
+        <div class="container">
+          <div class="text-center mb-4">
+            <h2 class="fw-bold">How it works</h2>
+            <p class="text-muted">Three simple steps to get insights.</p>
+          </div>
+          <div class="row g-4">
+            <div class="col-md-4">
+              <div class="card h-100 text-center">
+                <div class="card-body">
+                  <div class="display-6 text-primary mb-2"><i class="fa-solid fa-keyboard"></i></div>
+                  <h5 class="card-title">Describe</h5>
+                  <p class="text-muted mb-0">Tell us about your symptoms in plain language.</p>
                 </div>
-            </section>
-
-            <!-- Features Section -->
-            <section class="features-section py-5 bg-light">
-                <div class="container">
-                    <div class="row text-center mb-5">
-                        <div class="col-lg-8 mx-auto">
-                            <h2 class="display-5 fw-bold mb-3">How Mediverse+ Works</h2>
-                            <p class="lead text-muted">Our AI-powered system uses advanced machine learning to analyze your symptoms and provide accurate health predictions.</p>
-                        </div>
-                    </div>
-                    
-                    <div class="row g-4">
-                        <div class="col-md-4">
-                            <div class="feature-card h-100">
-                                <div class="feature-icon">
-                                    <i class="fas fa-edit text-primary"></i>
-                                </div>
-                                <h4>Describe Symptoms</h4>
-                                <p class="text-muted">Simply describe your symptoms in natural language. Our AI understands complex medical descriptions.</p>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="feature-card h-100">
-                                <div class="feature-icon">
-                                    <i class="fas fa-brain text-primary"></i>
-                                </div>
-                                <h4>AI Analysis</h4>
-                                <p class="text-muted">Our trained machine learning model analyzes your symptoms using advanced NLP and classification algorithms.</p>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="feature-card h-100">
-                                <div class="feature-icon">
-                                    <i class="fas fa-clipboard-list text-primary"></i>
-                                </div>
-                                <h4>Get Results</h4>
-                                <p class="text-muted">Receive instant predictions with confidence scores and detailed information about potential conditions.</p>
-                            </div>
-                        </div>
-                    </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="card h-100 text-center">
+                <div class="card-body">
+                  <div class="display-6 text-primary mb-2"><i class="fa-solid fa-brain"></i></div>
+                  <h5 class="card-title">Analyze</h5>
+                  <p class="text-muted mb-0">Our model interprets your text and matches medical patterns.</p>
                 </div>
-            </section>
-
-            <!-- Diseases Section -->
-            <section class="diseases-section py-5">
-                <div class="container">
-                    <div class="row text-center mb-5">
-                        <div class="col-lg-8 mx-auto">
-                            <h2 class="display-5 fw-bold mb-3">Supported Conditions</h2>
-                            <p class="lead text-muted">Our AI can help identify various health conditions with high accuracy.</p>
-                        </div>
-                    </div>
-                    
-                    <div class="row g-3">
-                        <div class="col-lg-3 col-md-4 col-sm-6">
-                            <div class="disease-tag">
-                                <i class="fas fa-thermometer-half me-2"></i>Typhoid
-                            </div>
-                        </div>
-                        <div class="col-lg-3 col-md-4 col-sm-6">
-                            <div class="disease-tag">
-                                <i class="fas fa-virus me-2"></i>Chicken Pox
-                            </div>
-                        </div>
-                        <div class="col-lg-3 col-md-4 col-sm-6">
-                            <div class="disease-tag">
-                                <i class="fas fa-bug me-2"></i>Dengue
-                            </div>
-                        </div>
-                        <div class="col-lg-3 col-md-4 col-sm-6">
-                            <div class="disease-tag">
-                                <i class="fas fa-snot me-2"></i>Common Cold
-                            </div>
-                        </div>
-                        <div class="col-lg-3 col-md-4 col-sm-6">
-                            <div class="disease-tag">
-                                <i class="fas fa-lungs me-2"></i>Pneumonia
-                            </div>
-                        </div>
-                        <div class="col-lg-3 col-md-4 col-sm-6">
-                            <div class="disease-tag">
-                                <i class="fas fa-mosquito me-2"></i>Malaria
-                            </div>
-                        </div>
-                        <div class="col-lg-3 col-md-4 col-sm-6">
-                            <div class="disease-tag">
-                                <i class="fas fa-head-side-virus me-2"></i>Migraine
-                            </div>
-                        </div>
-                        <div class="col-lg-3 col-md-4 col-sm-6">
-                            <div class="disease-tag">
-                                <i class="fas fa-heart me-2"></i>Hypertension
-                            </div>
-                        </div>
-                        <div class="col-lg-3 col-md-4 col-sm-6">
-                            <div class="disease-tag">
-                                <i class="fas fa-candy-cane me-2"></i>Diabetes
-                            </div>
-                        </div>
-                        <div class="col-lg-3 col-md-4 col-sm-6">
-                            <div class="disease-tag">
-                                <i class="fas fa-eye me-2"></i>Jaundice
-                            </div>
-                        </div>
-                        <div class="col-lg-3 col-md-4 col-sm-6">
-                            <div class="disease-tag">
-                                <i class="fas fa-allergies me-2"></i>Allergy
-                            </div>
-                        </div>
-                        <div class="col-lg-3 col-md-4 col-sm-6">
-                            <div class="disease-tag">
-                                <i class="fas fa-pills me-2"></i>Drug Reaction
-                            </div>
-                        </div>
-                    </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="card h-100 text-center">
+                <div class="card-body">
+                  <div class="display-6 text-primary mb-2"><i class="fa-solid fa-clipboard-list"></i></div>
+                  <h5 class="card-title">Get Results</h5>
+                  <p class="text-muted mb-0">See likely conditions with confidence and next steps.</p>
                 </div>
-            </section>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
-            <!-- CTA Section -->
-            <section class="cta-section py-5 bg-primary text-white">
-                <div class="container text-center">
-                    <h2 class="display-5 fw-bold mb-3">Ready to Check Your Symptoms?</h2>
-                    <p class="lead mb-4">Get instant AI-powered health insights in seconds.</p>
-                    <button class="btn btn-light btn-lg" onclick="showSection('predict')">
-                        <i class="fas fa-stethoscope me-2"></i>Start Symptom Check
+      <section class="py-5">
+        <div class="container">
+          <div class="text-center mb-4">
+            <h2 class="fw-bold">Supported conditions</h2>
+            <p class="text-muted">Example categories covered by the model.</p>
+          </div>
+          <div class="row g-3">
+            <div class="col-6 col-sm-4 col-lg-3"><div class="chip w-100 justify-content-center"><i class="fa-solid fa-thermometer"></i> Typhoid</div></div>
+            <div class="col-6 col-sm-4 col-lg-3"><div class="chip w-100 justify-content-center"><i class="fa-solid fa-virus"></i> Chicken Pox</div></div>
+            <div class="col-6 col-sm-4 col-lg-3"><div class="chip w-100 justify-content-center"><i class="fa-solid fa-bug"></i> Dengue</div></div>
+            <div class="col-6 col-sm-4 col-lg-3"><div class="chip w-100 justify-content-center"><i class="fa-solid fa-head-side-cough"></i> Common Cold</div></div>
+            <div class="col-6 col-sm-4 col-lg-3"><div class="chip w-100 justify-content-center"><i class="fa-solid fa-lungs"></i> Pneumonia</div></div>
+            <div class="col-6 col-sm-4 col-lg-3"><div class="chip w-100 justify-content-center"><i class="fa-solid fa-bug"></i> Malaria</div></div>
+            <div class="col-6 col-sm-4 col-lg-3"><div class="chip w-100 justify-content-center"><i class="fa-solid fa-brain"></i> Migraine</div></div>
+            <div class="col-6 col-sm-4 col-lg-3"><div class="chip w-100 justify-content-center"><i class="fa-solid fa-heart-pulse"></i> Hypertension</div></div>
+            <div class="col-6 col-sm-4 col-lg-3"><div class="chip w-100 justify-content-center"><i class="fa-solid fa-droplet"></i> Diabetes</div></div>
+            <div class="col-6 col-sm-4 col-lg-3"><div class="chip w-100 justify-content-center"><i class="fa-regular fa-eye"></i> Jaundice</div></div>
+            <div class="col-6 col-sm-4 col-lg-3"><div class="chip w-100 justify-content-center"><i class="fa-solid fa-hand-dots"></i> Allergy</div></div>
+            <div class="col-6 col-sm-4 col-lg-3"><div class="chip w-100 justify-content-center"><i class="fa-solid fa-pills"></i> Drug Reaction</div></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="py-5 bg-primary text-white">
+        <div class="container text-center">
+          <h2 class="fw-bold">Ready to check your symptoms?</h2>
+          <p class="lead mb-4">Get insights in seconds.</p>
+          <a class="btn btn-light btn-lg" href="#predict" data-section="predict"><i class="fa-solid fa-stethoscope me-2"></i>Start Symptom Check</a>
+        </div>
+      </section>
+
+      <section class="py-4 bg-warning-subtle">
+        <div class="container">
+          <div class="alert alert-warning mb-0" role="alert">
+            <h6 class="mb-1"><i class="fa-solid fa-triangle-exclamation me-2"></i>Important</h6>
+            <p class="mb-0 small">This tool is for educational purposes and not a medical diagnosis. Always consult qualified healthcare professionals.</p>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <!-- PREDICT -->
+    <section id="predict" class="section" aria-labelledby="predict-title">
+      <div class="container py-5">
+        <div class="row justify-content-center">
+          <div class="col-lg-8">
+            <div class="text-center mb-4">
+              <h1 id="predict-title" class="fw-bold"><i class="fa-solid fa-stethoscope me-2 text-primary"></i>AI Symptom Checker</h1>
+              <p class="text-muted">Describe your symptoms. We'll analyze and suggest likely conditions.</p>
+            </div>
+
+            <div class="card shadow-sm mb-4">
+              <div class="card-header bg-primary text-white"><strong>Describe your symptoms</strong></div>
+              <div class="card-body">
+                <form id="symptomForm" novalidate>
+                  <label for="symptoms" class="form-label fw-semibold">What are you experiencing?</label>
+                  <textarea id="symptoms" name="symptoms" rows="5" class="form-control" placeholder="Example: High fever and severe headache for 3 days, nausea, and body ache..." required></textarea>
+                  <div class="form-text"><i class="fa-regular fa-circle-question me-1"></i>Include duration, severity, and related info.</div>
+                  <div class="d-grid mt-3">
+                    <button id="analyzeBtn" type="submit" class="btn btn-primary btn-lg">
+                      <span class="button-content"><i class="fa-solid fa-magnifying-glass me-2"></i>Analyze Symptoms</span>
+                      <span class="loading-content d-none"><span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>Analyzing…</span>
                     </button>
-                </div>
-            </section>
-
-            <!-- Disclaimer -->
-            <section class="disclaimer-section py-4 bg-warning">
-                <div class="container text-center">
-                    <div class="row">
-                        <div class="col-lg-8 mx-auto">
-                            <h5><i class="fas fa-exclamation-triangle me-2"></i>Important Disclaimer</h5>
-                            <p class="mb-0">
-                                This tool is for informational purposes only and should not replace professional medical advice. 
-                                Always consult with qualified healthcare professionals for proper diagnosis and treatment.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </section>
-
-        <!-- Predict Section -->
-        <section id="predict" class="section">
-            <div class="container py-5">
-                <div class="row justify-content-center">
-                    <div class="col-lg-8">
-                        <!-- Header -->
-                        <div class="text-center mb-5">
-                            <h1 class="display-5 fw-bold text-primary mb-3">
-                                <i class="fas fa-stethoscope me-3"></i>AI Symptom Checker
-                            </h1>
-                            <p class="lead text-muted">
-                                Describe your symptoms in detail and let our AI analyze them for you.
-                            </p>
-                        </div>
-
-                        <!-- Symptom Input Form -->
-                        <div class="card shadow-lg border-0 mb-4">
-                            <div class="card-header bg-primary text-white">
-                                <h4 class="mb-0"><i class="fas fa-edit me-2"></i>Describe Your Symptoms</h4>
-                            </div>
-                            <div class="card-body p-4">
-                                <form id="symptomForm">
-                                    <div class="mb-4">
-                                        <label for="symptoms" class="form-label fw-bold">
-                                            Tell us what you're experiencing:
-                                        </label>
-                                        <textarea 
-                                            class="form-control form-control-lg" 
-                                            id="symptoms" 
-                                            name="symptoms" 
-                                            rows="5" 
-                                            placeholder="Example: I have been experiencing severe headache and fever for the past few days. I also feel nauseous and have been vomiting. My body feels weak and I have stomach pain..."
-                                            required></textarea>
-                                        <div class="form-text">
-                                            <i class="fas fa-info-circle me-1"></i>
-                                            Be as detailed as possible. Include duration, severity, and any other relevant information.
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="d-grid">
-                                        <button type="submit" class="btn btn-primary btn-lg">
-                                            <i class="fas fa-search me-2"></i>Analyze Symptoms
-                                        </button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-
-                        <!-- Results Section -->
-                        <div id="resultsSection" style="display: none;">
-                            <!-- Results will be dynamically populated here -->
-                        </div>
-
-                        <!-- Sample Symptoms -->
-                        <div class="card border-0 bg-light">
-                            <div class="card-body">
-                                <h5 class="card-title">
-                                    <i class="fas fa-lightbulb me-2"></i>Sample Symptoms
-                                </h5>
-                                <p class="card-text text-muted">Here are some examples of how to describe your symptoms:</p>
-                                <div class="row">
-                                    <div class="col-md-6 mb-3">
-                                        <div class="sample-symptom" onclick="fillSample(this)">
-                                            <strong>Fever & Headache:</strong><br>
-                                            <small>"I have been experiencing severe headache and high fever for the past 3 days. I also feel nauseous and have vomited twice."</small>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6 mb-3">
-                                        <div class="sample-symptom" onclick="fillSample(this)">
-                                            <strong>Respiratory Issues:</strong><br>
-                                            <small>"I have persistent cough with difficulty breathing. My chest feels tight and I'm experiencing fatigue."</small>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6 mb-3">
-                                        <div class="sample-symptom" onclick="fillSample(this)">
-                                            <strong>Stomach Problems:</strong><br>
-                                            <small>"I have severe stomach pain with diarrhea and constipation. I feel nauseous most of the time and have lost my appetite."</small>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6 mb-3">
-                                        <div class="sample-symptom" onclick="fillSample(this)">
-                                            <strong>Skin Issues:</strong><br>
-                                            <small>"I have an itchy rash all over my body with red bumps. The itching is intense and I also have mild fever."</small>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                  </div>
+                </form>
+              </div>
             </div>
 
-            <!-- Medical Disclaimer -->
-            <div class="alert alert-warning mx-auto" style="max-width: 800px;">
-                <div class="text-center">
-                    <h6><i class="fas fa-exclamation-triangle me-2"></i>Medical Disclaimer</h6>
-                    <p class="mb-0 small">
-                        This AI tool provides educational information only and should not be used as a substitute for professional medical advice, 
-                        diagnosis, or treatment. Always seek the advice of your physician or other qualified health provider with any questions 
-                        you may have regarding a medical condition.
-                    </p>
+            <div id="resultsSection" class="results-section" hidden></div>
+
+            <div class="card bg-light">
+              <div class="card-body">
+                <h5 class="card-title"><i class="fa-regular fa-lightbulb me-2"></i>Sample descriptions</h5>
+                <div class="row g-3">
+                  <div class="col-md-6">
+                    <div class="p-3 bg-white border rounded-3 cursor-pointer" data-sample>
+                      <strong>Fever & Headache</strong>
+                      <div class="small text-muted">I have a high fever and severe headache for 3 days. I feel nauseous and vomited twice.</div>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="p-3 bg-white border rounded-3 cursor-pointer" data-sample>
+                      <strong>Respiratory</strong>
+                      <div class="small text-muted">Persistent cough with difficulty breathing. Chest feels tight and I'm fatigued.</div>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="p-3 bg-white border rounded-3 cursor-pointer" data-sample>
+                      <strong>Stomach</strong>
+                      <div class="small text-muted">Severe stomach pain with diarrhea. Nausea most of the time and low appetite.</div>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="p-3 bg-white border rounded-3 cursor-pointer" data-sample>
+                      <strong>Skin</strong>
+                      <div class="small text-muted">Itchy rash with red bumps across body and mild fever.</div>
+                    </div>
+                  </div>
                 </div>
+              </div>
             </div>
-        </section>
+          </div>
+        </div>
+      </div>
+      <div class="container pb-5">
+        <div class="alert alert-warning" role="alert">
+          <strong>Medical disclaimer:</strong> This is not a diagnosis. Contact your physician for medical advice.
+        </div>
+      </div>
+    </section>
 
-        <!-- About Section -->
-        <section id="about" class="section">
-            <div class="container py-5">
-                <div class="row">
-                    <div class="col-lg-8 mx-auto">
-                        <!-- Header -->
-                        <div class="text-center mb-5">
-                            <h1 class="display-4 fw-bold text-primary mb-3">About Mediverse+</h1>
-                            <p class="lead text-muted">
-                                Learn about our AI-powered health assistance platform and the technology behind it.
-                            </p>
-                        </div>
+    <!-- ABOUT -->
+    <section id="about" class="section" aria-labelledby="about-title">
+      <div class="container py-5">
+        <div class="row justify-content-center">
+          <div class="col-lg-9">
+            <div class="text-center mb-4">
+              <h1 id="about-title" class="fw-bold text-primary">About Mediverse+</h1>
+              <p class="text-muted">Making healthcare guidance more accessible with AI.</p>
+            </div>
+            <div class="card mb-3">
+              <div class="card-body">
+                <h5 class="fw-bold"><i class="fa-solid fa-bullseye me-2 text-primary"></i>Our mission</h5>
+                <p class="mb-0">We use machine learning to interpret symptom descriptions and suggest likely conditions so people can make informed decisions and seek proper care sooner.</p>
+              </div>
+            </div>
+            <div class="row g-3">
+              <div class="col-md-6">
+                <div class="card h-100">
+                  <div class="card-body">
+                    <h6 class="fw-bold"><i class="fa-solid fa-brain me-2 text-primary"></i>Machine Learning</h6>
+                    <p class="mb-0">Text classification models trained on symptom datasets map inputs to condition probabilities.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="card h-100">
+                  <div class="card-body">
+                    <h6 class="fw-bold"><i class="fa-solid fa-language me-2 text-primary"></i>Natural Language</h6>
+                    <p class="mb-0">NLP turns free-form text into structured features that models can understand.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
 
-                        <!-- Mission -->
-                        <div class="card shadow border-0 mb-4">
-                            <div class="card-body p-4">
-                                <h3 class="text-primary mb-3">
-                                    <i class="fas fa-bullseye me-2"></i>Our Mission
-                                </h3>
-                                <p class="text-muted">
-                                    Mediverse+ is dedicated to making healthcare more accessible through artificial intelligence. 
-                                    Our platform uses advanced machine learning algorithms to analyze symptoms and provide 
-                                    preliminary health insights, helping users make informed decisions about their health.
-                                </p>
-                            </div>
-                        </div>
+    <!-- CONTACT -->
+    <section id="contact" class="section" aria-labelledby="contact-title">
+      <div class="container py-5">
+        <div class="row justify-content-center">
+          <div class="col-lg-8">
+            <div class="text-center mb-4">
+              <h1 id="contact-title" class="fw-bold text-primary">Contact</h1>
+              <p class="text-muted">We'd love to hear your feedback.</p>
+            </div>
+            <div class="card">
+              <div class="card-body">
+                <div class="row g-3">
+                  <div class="col-md-6">
+                    <div class="border rounded-3 p-3 h-100">
+                      <div class="d-flex align-items-center mb-2"><i class="fa-solid fa-envelope text-primary me-2"></i><strong>Email</strong></div>
+                      <a href="mailto:hello@example.com">hello@example.com</a>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="border rounded-3 p-3 h-100">
+                      <div class="d-flex align-items-center mb-2"><i class="fa-brands fa-github text-primary me-2"></i><strong>GitHub</strong></div>
+                      <a href="https://github.com/mehulvish13/mediverse-TRIED-static" target="_blank" rel="noopener">Project Repository</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
 
-                        <!-- Technology -->
-                        <div class="card shadow border-0 mb-4">
-                            <div class="card-body p-4">
-                                <h3 class="text-primary mb-3">
-                                    <i class="fas fa-cogs me-2"></i>Technology Behind Mediverse+
-                                </h3>
-                                <div class="row">
-                                    <div class="col-md-6 mb-3">
-                                        <h5><i class="fas fa-brain me-2"></i>Machine Learning</h5>
-                                        <p class="text-muted">
-                                            Our system uses Support Vector Machine (SVM) algorithms trained on medical symptom data 
-                                            to classify and predict potential health conditions.
-                                        </p>
-                                    </div>
-                                    <div class="col-md-6 mb-3">
-                                        <h5><i class="fas fa-language me-2"></i>Natural Language Processing</h5>
-                                        <p class="text-muted">
-                                            Advanced NLP techniques including
+  <footer class="py-4 bg-dark text-white-50 mt-auto" role="contentinfo">
+    <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
+      <div>© <span id="year"></span> Mediverse+</div>
+      <div class="d-flex gap-3">
+        <a class="link-light link-underline-opacity-0" href="#about" data-section="about">About</a>
+        <a class="link-light link-underline-opacity-0" href="privacy.html">Privacy</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+  <script>
+    // SPA navigation
+    const sections = Array.from(document.querySelectorAll('.section'));
+    const navLinks = Array.from(document.querySelectorAll('[data-section]'));
+
+    function showSection(id) {
+      sections.forEach(s => s.classList.toggle('active', s.id === id));
+      navLinks.forEach(a => a.classList.toggle('active', a.getAttribute('data-section') === id));
+      const navbar = document.querySelector('#nav');
+      if (navbar?.classList.contains('show')) new bootstrap.Collapse(navbar).hide();
+    }
+
+    function initFromHash() {
+      const id = (location.hash || '#home').replace('#','');
+      const exists = sections.some(s => s.id === id);
+      showSection(exists ? id : 'home');
+    }
+
+    // Link clicks
+    document.addEventListener('click', (e) => {
+      const a = e.target.closest('a[data-section]');
+      if (!a) return;
+      e.preventDefault();
+      const id = a.getAttribute('data-section');
+      history.pushState({}, '', `#${id}`);
+      showSection(id);
+    });
+
+    // Back/forward
+    window.addEventListener('popstate', initFromHash);
+
+    // Footer year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Samples
+    document.querySelectorAll('[data-sample]').forEach(el => el.addEventListener('click', () => {
+      const text = el.querySelector('.small').textContent.trim();
+      const ta = document.getElementById('symptoms');
+      showSection('predict');
+      setTimeout(()=>{ ta.value = text; ta.focus(); }, 0);
+    }));
+
+    // Simple mock analysis
+    const form = document.getElementById('symptomForm');
+    const btn = document.getElementById('analyzeBtn');
+    const results = document.getElementById('resultsSection');
+
+    form?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const text = (document.getElementById('symptoms').value || '').trim();
+      if (!text) return;
+
+      // loading state
+      btn.disabled = true;
+      btn.querySelector('.button-content').classList.add('d-none');
+      btn.querySelector('.loading-content').classList.remove('d-none');
+
+      setTimeout(() => {
+        const out = infer(text);
+        results.hidden = false;
+        results.innerHTML = renderResults(out);
+        btn.disabled = false;
+        btn.querySelector('.button-content').classList.remove('d-none');
+        btn.querySelector('.loading-content').classList.add('d-none');
+        results.scrollIntoView({behavior:'smooth', block:'start'});
+      }, 900);
+    });
+
+    function infer(t) {
+      const lc = t.toLowerCase();
+      const res = [];
+      if (/(fever|high temperature)/.test(lc)) res.push({name:'Typhoid (possible)', score:0.76});
+      if (/(cough|breath|tight chest)/.test(lc)) res.push({name:'Pneumonia (possible)', score:0.68});
+      if (/(rash|itch)/.test(lc)) res.push({name:'Allergy (possible)', score:0.64});
+      if (/(headache|migraine)/.test(lc)) res.push({name:'Migraine (possible)', score:0.61});
+      if (!res.length) res.push({name:'General viral illness (unspecified)', score:0.52});
+      return res
+        .sort((a,b)=>b.score-a.score)
+        .slice(0,3);
+    }
+
+    function renderResults(items) {
+      const rows = items.map(i => `
+        <div class="col-md-6">
+          <div class="card h-100">
+            <div class="card-body">
+              <div class="d-flex align-items-center justify-content-between mb-2">
+                <h5 class="card-title mb-0">${i.name}</h5>
+                <span class="badge text-bg-primary">${Math.round(i.score*100)}%</span>
+              </div>
+              <p class="text-muted mb-0">Consider monitoring symptoms and consulting a clinician if symptoms persist or worsen.</p>
+            </div>
+          </div>
+        </div>`).join('');
+
+      return `
+        <div class="card mb-3">
+          <div class="card-header bg-success text-white"><strong><i class="fa-solid fa-circle-check me-2"></i>Results</strong></div>
+          <div class="card-body">
+            <div class="row g-3">${rows}</div>
+          </div>
+        </div>`;
+    }
+
+    // Init
+    initFromHash();
+  </script>
+</body>
+</html>

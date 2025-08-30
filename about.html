@@ -1,0 +1,196 @@
+{% extends "base.html" %}
+
+{% block title %}About - Mediverse+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <!-- Header -->
+            <div class="text-center mb-5">
+                <h1 class="display-4 fw-bold text-primary mb-3">About Mediverse+</h1>
+                <p class="lead text-muted">
+                    Learn about our AI-powered health assistance platform and the technology behind it.
+                </p>
+            </div>
+
+            <!-- Mission -->
+            <div class="card shadow border-0 mb-4">
+                <div class="card-body p-4">
+                    <h3 class="text-primary mb-3">
+                        <i class="fas fa-bullseye me-2"></i>Our Mission
+                    </h3>
+                    <p class="text-muted">
+                        Mediverse+ is dedicated to making healthcare more accessible through artificial intelligence. 
+                        Our platform uses advanced machine learning algorithms to analyze symptoms and provide 
+                        preliminary health insights, helping users make informed decisions about their health.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Technology -->
+            <div class="card shadow border-0 mb-4">
+                <div class="card-body p-4">
+                    <h3 class="text-primary mb-3">
+                        <i class="fas fa-cogs me-2"></i>Technology Behind Mediverse+
+                    </h3>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <h5><i class="fas fa-brain me-2"></i>Machine Learning</h5>
+                            <p class="text-muted">
+                                Our system uses Support Vector Machine (SVM) algorithms trained on medical symptom data 
+                                to classify and predict potential health conditions.
+                            </p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <h5><i class="fas fa-language me-2"></i>Natural Language Processing</h5>
+                            <p class="text-muted">
+                                Advanced NLP techniques including TF-IDF vectorization allow our AI to understand 
+                                complex symptom descriptions in natural language.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    {% if model_info %}
+                    <div class="mt-4">
+                        <h5>Model Performance</h5>
+                        <div class="row text-center">
+                            <div class="col-md-3">
+                                <div class="stat-card">
+                                    <h4 class="text-success">{{ "%.1f"|format(model_info.accuracy * 100) }}%</h4>
+                                    <small class="text-muted">Accuracy</small>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="stat-card">
+                                    <h4 class="text-primary">{{ model_info.total_diseases }}</h4>
+                                    <small class="text-muted">Diseases</small>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="stat-card">
+                                    <h4 class="text-info">750</h4>
+                                    <small class="text-muted">Training Samples</small>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="stat-card">
+                                    <h4 class="text-warning">{{ model_info.model_name }}</h4>
+                                    <small class="text-muted">Algorithm</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Supported Conditions -->
+            {% if model_info and model_info.diseases %}
+            <div class="card shadow border-0 mb-4">
+                <div class="card-body p-4">
+                    <h3 class="text-primary mb-3">
+                        <i class="fas fa-list-check me-2"></i>Supported Medical Conditions
+                    </h3>
+                    <p class="text-muted mb-3">
+                        Our AI model can help identify the following medical conditions:
+                    </p>
+                    <div class="row">
+                        {% for disease in model_info.diseases %}
+                        <div class="col-md-6 col-lg-4 mb-2">
+                            <div class="condition-item">
+                                <i class="fas fa-check-circle text-success me-2"></i>
+                                {{ disease }}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- How It Works -->
+            <div class="card shadow border-0 mb-4">
+                <div class="card-body p-4">
+                    <h3 class="text-primary mb-3">
+                        <i class="fas fa-gear me-2"></i>How It Works
+                    </h3>
+                    <div class="process-steps">
+                        <div class="step-item mb-3">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <h5>Symptom Input</h5>
+                                <p class="text-muted">You describe your symptoms in natural language, just as you would to a doctor.</p>
+                            </div>
+                        </div>
+                        <div class="step-item mb-3">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <h5>Text Processing</h5>
+                                <p class="text-muted">Our NLP algorithms clean and process your text, extracting meaningful features.</p>
+                            </div>
+                        </div>
+                        <div class="step-item mb-3">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <h5>AI Analysis</h5>
+                                <p class="text-muted">The trained machine learning model analyzes the processed symptoms.</p>
+                            </div>
+                        </div>
+                        <div class="step-item">
+                            <div class="step-number">4</div>
+                            <div class="step-content">
+                                <h5>Results & Information</h5>
+                                <p class="text-muted">You receive predictions with confidence scores and relevant health information.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Limitations -->
+            <div class="card shadow border-0 mb-4 border-warning">
+                <div class="card-header bg-warning">
+                    <h4 class="mb-0">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Important Limitations
+                    </h4>
+                </div>
+                <div class="card-body p-4">
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <i class="fas fa-check-circle text-warning me-2"></i>
+                            This tool is for educational and informational purposes only
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check-circle text-warning me-2"></i>
+                            Not a substitute for professional medical diagnosis
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check-circle text-warning me-2"></i>
+                            Always consult healthcare professionals for medical advice
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check-circle text-warning me-2"></i>
+                            Results should be used as preliminary guidance only
+                        </li>
+                        <li>
+                            <i class="fas fa-check-circle text-warning me-2"></i>
+                            Emergency symptoms require immediate medical attention
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Call to Action -->
+            <div class="text-center">
+                <a href="{{ url_for('predict') }}" class="btn btn-primary btn-lg me-3">
+                    <i class="fas fa-stethoscope me-2"></i>Try Symptom Checker
+                </a>
+                <a href="{{ url_for('contact') }}" class="btn btn-outline-primary btn-lg">
+                    <i class="fas fa-envelope me-2"></i>Contact Us
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
